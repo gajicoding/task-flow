@@ -1,7 +1,7 @@
 package com.example.outsourcingproject.global.security;
 
 import com.example.outsourcingproject.domain.auth.service.TokenBlacklistService;
-import com.example.outsourcingproject.domain.user.enums.UserRole;
+import com.example.outsourcingproject.domain.auth.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

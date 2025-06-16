@@ -35,13 +35,20 @@ public class AuthController {
     @PostMapping("/auth/signin")
     public ResponseEntity<ApiResponse<SigninResponseDto>> signin(@Valid @RequestBody SigninRequestDto signinRequest) {
         SigninResponseDto response = authService.signin(signinRequest);
-        return ResponseEntity.ok(ApiResponse.success(response, "로그인이 완료되었습니다."));
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + response.getToken())
+                .header("X-Refresh-Token", response.getRefreshToken())
+                .body(ApiResponse.success("로그인이 완료되었습니다."));
     }
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<ApiResponse<SigninResponseDto>> refreshToken(@Valid @RequestBody RefreshTokenRequestDto refreshTokenRequest) {
         SigninResponseDto response = authService.refreshToken(refreshTokenRequest.getRefreshToken());
-        return ResponseEntity.ok(ApiResponse.success(response, "토큰이 갱신되었습니다."));
+
+        return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + response.getToken())
+                .header("X-Refresh-Token", response.getRefreshToken())
+                .body(ApiResponse.success("토큰이 갱신되었습니다."));
     }
 
     @PostMapping("/auth/logout")

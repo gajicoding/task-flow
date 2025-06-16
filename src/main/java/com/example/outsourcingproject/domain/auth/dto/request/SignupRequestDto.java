@@ -18,7 +18,7 @@ public class SignupRequestDto {
     private String name;
 
     @NotBlank(message = "사용자명은 필수입니다")
-    @Size(min = 2, max = 20, message = "사용자명은 2-20자여야 합니다")
+    @Size(min = 4, max = 20, message = "사용자명은 4-20자여야 합니다")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "사용자명은 영문과 숫자만 사용할 수 있습니다")
     private String username;
 

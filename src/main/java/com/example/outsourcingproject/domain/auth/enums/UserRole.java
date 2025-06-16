@@ -1,6 +1,6 @@
-package com.example.outsourcingproject.domain.user.enums;
+package com.example.outsourcingproject.domain.auth.enums;
 
-import com.example.outsourcingproject.domain.user.exception.InvalidUserRoleException;
+import com.example.outsourcingproject.domain.auth.exception.InvalidUserRoleException;
 
 import java.util.Arrays;
 

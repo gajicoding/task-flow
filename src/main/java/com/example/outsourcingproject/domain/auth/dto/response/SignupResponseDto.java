@@ -5,11 +5,11 @@ import lombok.Getter;
 @Getter
 public class SignupResponseDto {
 
-    private final String token;
-    private final String refreshToken;
+    private final String username;
+    private final String email;
 
-    public SignupResponseDto(String token, String refreshToken) {
-        this.token = token;
-        this.refreshToken = refreshToken;
+    public SignupResponseDto(String username, String email) {
+        this.username = username;
+        this.email = email;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.outsourcingproject.domain.user.entity;
 
-import com.example.outsourcingproject.domain.user.enums.UserRole;
 import com.example.outsourcingproject.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,30 +14,17 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(unique = true, nullable = false, length = 20)
-    private String username;  // 로그인 아이디
-
-    @Column(unique = true, nullable = false, length = 100)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    private Long id; // Auth와 동일한 PK
 
     @Column(nullable = false, length = 50)
-    private String name;      // 실명
+    private String name; // 캐시용
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private UserRole role; // USER, ADMIN
+    @Column(unique = true, nullable = false, length = 100)
+    private String email; // 캐시용
 
-    public User(String name, String username, String email, String password, UserRole userRole) {
+    public User(Long id, String name, String email) {
+        this.id = id;
         this.name = name;
-        this.username = username;
         this.email = email;
-        this.password = password;
-        this.role = userRole;
     }
 }

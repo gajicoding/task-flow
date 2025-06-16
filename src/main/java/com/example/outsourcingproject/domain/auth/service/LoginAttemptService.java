@@ -15,8 +15,8 @@ public class LoginAttemptService {
 
     private final ConcurrentHashMap<String, AttemptInfo> loginAttempts = new ConcurrentHashMap<>();
 
-    public void recordFailedAttempt(String email) {
-        String key = email.toLowerCase();
+    public void recordFailedAttempt(String username) {
+        String key = username.toLowerCase();
 
         loginAttempts.compute(key, (k, attemptInfo) -> {
             if (attemptInfo == null) {
@@ -34,7 +34,7 @@ public class LoginAttemptService {
         AttemptInfo info = loginAttempts.get(key);
 
         if (info.attemptCount() >= MAX_ATTEMPTS) {
-            log.warn("로그인 차단됨: 계정 {}분간 차단", BLOCK_DURATION_MINUTES);
+            log.warn("로그인 차단됨: 사옹자명 '{}' {}분간 차단",username, BLOCK_DURATION_MINUTES);
         }
     }
 

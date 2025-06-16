@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.global.security;
 
-import com.example.outsourcingproject.domain.user.enums.UserRole;
+import com.example.outsourcingproject.domain.auth.enums.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +15,7 @@ import java.util.Collections;
 public class UserPrincipal implements UserDetails {
 
     private final Long id;
+    private final String username;
     private final String email;
     private final UserRole role;
 
@@ -33,7 +34,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

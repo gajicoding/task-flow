@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.global.security;
 
-import com.example.outsourcingproject.domain.user.enums.UserRole;
+import com.example.outsourcingproject.domain.auth.enums.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
