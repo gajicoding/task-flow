@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.config;
+package com.example.outsourcingproject.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;

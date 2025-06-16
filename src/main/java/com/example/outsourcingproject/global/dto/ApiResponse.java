@@ -1,4 +1,4 @@
-package com.example.outsourcingproject.common.dto;
+package com.example.outsourcingproject.global.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
@@ -22,12 +22,20 @@ public class ApiResponse<T> {
         this.timestamp = LocalDateTime.now();
     }
 
-    // 실패 응답 생성자
+    // 실패 응답 생성자 1
     private ApiResponse(String message) {
         this.success = false;
         this.message = message;
         this.data = null;
         this.timestamp = LocalDateTime.now();
+    }
+
+    // 실패 응답 생성자 2
+    private ApiResponse(boolean success, String message, T data, LocalDateTime timestamp) {
+        this.success = success;
+        this.message = message;
+        this.data = data;
+        this.timestamp = timestamp;
     }
 
     // 성공 - 데이터 있음
@@ -53,5 +61,10 @@ public class ApiResponse<T> {
     // 실패
     public static <T> ApiResponse<T> failure(String message) {
         return new ApiResponse<>(message);
+    }
+
+    // 실패 - 데이터 포함 (RateLimitException용)
+    public static <T> ApiResponse<T> failure(String message, T data) {
+        return new ApiResponse<>(false, message, data, LocalDateTime.now());
     }
 }
