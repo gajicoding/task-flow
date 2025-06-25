@@ -103,27 +103,50 @@ docker run -d -p 3000:3000 dannyseo4284/taskflow-frontend:latest
 
 ### ERD 구조
 
-ERD 이미지 첨부 필요 
+![ERD](ERD.png)
 
-### API 엔드포인트
+## API 엔드포인트
 
 **총 28개 엔드포인트**
 
-| 기능 영역 | 엔드포인트 수 | 주요 기능 |
-|-----------|---------------|-----------|
-| **인증** | 5개 | 회원가입, 로그인, 토큰 갱신, 로그아웃, 탈퇴 |
-| **사용자** | 1개 | 프로필 조회 |
-| **태스크** | 8개 | CRUD, 상태 변경, 검색 |
-| **댓글** | 4개 | CRUD |
-| **대시보드** | 6개 | 통계, 트렌드, 진행률 |
-| **활동 로그** | 1개 | 조회 |
-
+```
+API Count Summary
+==========================
+  - AuthController.java
+    ├── POST APIs:        5
+  - CommentController.java
+    ├── GET APIs:        1
+    ├── POST APIs:        1
+    ├── PUT APIs:        1
+    └── DELETE APIs:        1
+  - UserController.java
+    ├── GET APIs:        2
+  - DashboardController.java
+    ├── GET APIs:        8
+  - TaskController.java
+    ├── GET APIs:        4
+    ├── POST APIs:        1
+    ├── PATCH APIs:        1
+    ├── PUT APIs:        1
+    └── DELETE APIs:        1
+  - ActivityLogController.java
+    ├── GET APIs:        1
+==========================
+API Statistics
+==========================
+- GET APIs: 16
+- POST APIs: 7
+- PATCH APIs: 1
+- PUT APIs: 2
+- DELETE APIs: 2
+- Total APIs: 28
+==========================
+```
 ---
 
 ## 기술적 선택 근거
 
 ### AOP + 이벤트 기반 로깅
-
 **선택 이유**
 - 특정 메서드에만 로깅 적용 가능 (세밀한 제어)
 - 비즈니스 로직과 로깅 로직 완전 분리
@@ -137,7 +160,7 @@ public ResponseEntity<TaskCreateResponseDto> createTask() {
     // 비즈니스 로직
 }
 ```
-
+---
 ### JWT 토큰 블랙리스트 (MySQL 사용)
 
 **Redis 대신 MySQL을 선택한 이유**
@@ -148,7 +171,7 @@ public ResponseEntity<TaskCreateResponseDto> createTask() {
 | **데이터 영속성** | ✅ 재시작 시에도 유지 | ❌ 메모리 기반 |
 | **트랜잭션 일관성** | ✅ 사용자 탈퇴와 함께 처리 | ❌ 별도 처리 필요 |
 | **팀 규모 적합성** | ✅ 충분한 성능 | ⚠️ 과도한 스펙 |
-
+---
 ### 이벤트 기반 아키텍처
 
 **Auth ↔ User 도메인 분리**
@@ -174,7 +197,7 @@ public void handleUserRegistered(UserRegisteredEvent event) {
 - 도메인 간 느슨한 결합
 - 장애 격리 효과
 - 확장성 확보
-
+---
 ### Native Query + Projection (대시보드)
 
 **선택 이유**
@@ -229,7 +252,7 @@ public class AuthExceptionHandler {
 - 코드 응집도 향상
 - 도메인별 예외 처리 로직 관리 용이
 - DDD 원칙 준수
-
+---
 ### 문제 2: DDL과 JPA 엔티티 불일치
 
 **문제 상황**
@@ -250,21 +273,38 @@ public class AuthExceptionHandler {
 ## 팀 협업
 
 ### 개발 문화
-
+---
 **체계적인 일정 관리**
 - 매일 TODO 작성 및 공유
 - 진행상황 실시간 체크
-
+---
 **지식 공유 문화**
 - 학습 내용 블로그 작성 및 공유
 - 주요 기술 결정사항 문서화
 
 **팀원 학습 블로그 공유**
+
+- **김나경**
+  - [Spring 로그 레벨(Log Level)](https://gajicoding.tistory.com/380)
+  - [전략 패턴(Strategy Pattern)](https://gajicoding.tistory.com/381)
+  - [템플릿 메서드 패턴(Template Method Pattern)](https://gajicoding.tistory.com/382)
+
 - **차준호**
   - [Docker의 동작원리](https://juno0112.tistory.com/84)
   - [데이터베이스 인덱스의 구조와 특징](https://juno0112.tistory.com/86)
   - [가상화 기술: 하드웨어 가상화 vs OS 가상화 vs 컨테이너화](https://juno0112.tistory.com/87)
 
+- **김신영**
+  - [save() vs saveAll() vs bulk insert](https://velog.io/@eggtart21/save-vs-saveAll-vs-bulk-insert)
+  - [MySQL 인덱스 성능 비교 실험 (100만 건 기준)](https://velog.io/@eggtart21/%E3%84%B4%E3%85%87%E3%84%B9%E3%85%8E%E3%84%B4%E3%85%87%E3%85%8E)
+
+- **박민철**
+  - [GET Method에 RequestBody 요청 적합한지에 대해](https://syuare.tistory.com/67)
+  - [HTTP 201 CREATED 의 응답 헤더에 포함되어야 하는 것](https://syuare.tistory.com/68)
+ 
+- **박현우**
+  - [지연로딩(Lazy)과 즉시로딩(Eager)](https://thisisyou.tistory.com/23)
+---
 **일관성 있는 개발 규칙**
 
 ```
@@ -279,7 +319,7 @@ public class AuthExceptionHandler {
 - **승인 조건**: Pull Request는 최소 2명 이상의 승인 필요
 - **리뷰 기준**: 기능 완성도, 가독성, 일관성, 예외 처리 여부 검토
 - **의견 조율**: 리뷰어 간 의견 충돌 시 팀 논의를 통한 합의 후 반영
-
+---
 ### Git 브랜치 전략
 
 ```
@@ -303,15 +343,15 @@ main (운영)
 ### 성과
 
 **기술적 성취**
-- ✅ AOP 기반 로깅 시스템 구축
-- ✅ JWT 토큰 보안 체계 완성
-- ✅ 이벤트 기반 아키텍처 도입
-- ✅ 실시간 대시보드 통계 시스템
+- AOP 기반 로깅 시스템 구축
+- JWT 토큰 보안 체계 완성
+- 이벤트 기반 아키텍처 도입
+- 실시간 대시보드 통계 시스템
 
 **팀워크**
-- ✅ 체계적인 코드 리뷰 문화 정착
-- ✅ 지식 공유를 통한 팀 역량 향상
-- ✅ 일관된 개발 프로세스 수립
+- 체계적인 코드 리뷰 문화 정착
+- 지식 공유를 통한 팀 역량 향상
+- 일관된 개발 프로세스 수립
 
 ### 개선이 필요한 부분
 
@@ -327,12 +367,12 @@ main (운영)
 
 ### 향후 계획
 
-**단기 개선 (1-2개월)**
+**단기 개선**
 - [ ] Flyway를 통한 DB 마이그레이션 자동화
 - [ ] Swagger/OpenAPI 적용으로 API 문서화
 - [ ] 테스트 커버리지 70% 이상 달성
 
-**중장기 개선 (3-6개월)**
+**중장기 개선**
 - [ ] 마이크로서비스 아키텍처 전환 검토
 - [ ] Redis 캐시 도입으로 성능 최적화
 - [ ] 모니터링 시스템 구축 (Prometheus + Grafana)

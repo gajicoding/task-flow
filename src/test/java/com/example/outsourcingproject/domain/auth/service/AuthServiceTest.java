@@ -6,6 +6,7 @@ import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto
 import com.example.outsourcingproject.domain.auth.dto.response.SignupResponseDto;
 import com.example.outsourcingproject.domain.auth.entity.Auth;
 import com.example.outsourcingproject.domain.auth.entity.RefreshToken;
+import com.example.outsourcingproject.domain.auth.enums.AuthErrorMessage;
 import com.example.outsourcingproject.domain.auth.enums.UserRole;
 import com.example.outsourcingproject.domain.auth.event.UserRegisteredEvent;
 import com.example.outsourcingproject.domain.auth.event.UserWithdrawnEvent;
@@ -142,7 +143,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.signup(signupRequest))
                 .isInstanceOf(DuplicateEmailException.class)
-                .hasMessage("이미 존재하는 이메일입니다.");
+                .hasMessage(AuthErrorMessage.DUPLICATE_EMAIL.getMessage());
 
         verify(authRepository, never()).save(any(Auth.class));
         verify(eventPublisher, never()).publishEvent(any());
@@ -161,7 +162,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.signup(signupRequest))
                 .isInstanceOf(DuplicateEmailException.class)
-                .hasMessage("이미 존재하는 사용자명입니다.");
+                .hasMessage(AuthErrorMessage.DUPLICATE_USERNAME.getMessage());
 
         verify(authRepository, never()).save(any(Auth.class));
         verify(eventPublisher, never()).publishEvent(any());
@@ -202,7 +203,8 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.signin(signinRequest))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("잘못된 사용자명 또는 비밀번호입니다");
+                .hasMessage(AuthErrorMessage.INVALID_CREDENTIALS.getMessage());
+
 
         verify(loginAttemptService, never()).recordSuccessfulLogin(any());
     }
@@ -221,7 +223,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.signin(signinRequest))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("잘못된 사용자명 또는 비밀번호입니다");
+                .hasMessage(AuthErrorMessage.INVALID_CREDENTIALS.getMessage());
 
         verify(loginAttemptService).recordFailedAttempt(signinRequest.getUsername());
         verify(loginAttemptService, never()).recordSuccessfulLogin(any());
@@ -239,7 +241,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.signin(signinRequest))
                 .isInstanceOf(RateLimitException.class)
-                .hasMessage("로그인이 일시적으로 차단되었습니다.");
+                .hasMessage(AuthErrorMessage.ACCOUNT_BLOCKED.format(10L));
 
         verify(authRepository, never()).findActiveByUsername(any());
     }
@@ -283,7 +285,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.refreshToken(refreshTokenValue))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("사용자를 찾을 수 없습니다.");
+                .hasMessage(AuthErrorMessage.USER_NOT_FOUND.getMessage());
     }
 
     @DisplayName("로그아웃 성공 테스트")
@@ -352,7 +354,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.withdraw(userId, password))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("사용자를 찾을 수 없습니다.");
+                .hasMessage(AuthErrorMessage.WITHDRAW_USER_NOT_FOUND.getMessage());
 
         verify(refreshTokenService, never()).deleteRefreshTokenByUserId(any());
         verify(eventPublisher, never()).publishEvent(any());
@@ -373,7 +375,7 @@ public class AuthServiceTest {
         // when and then
         assertThatThrownBy(() -> authService.withdraw(userId, wrongPassword))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("비밀번호가 일치하지 않습니다.");
+                .hasMessage(AuthErrorMessage.PASSWORD_MISMATCH.getMessage());
 
         verify(authRepository, never()).save(any());
         verify(refreshTokenService, never()).deleteRefreshTokenByUserId(any());

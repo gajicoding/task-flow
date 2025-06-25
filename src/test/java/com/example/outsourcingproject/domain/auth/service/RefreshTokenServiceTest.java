@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.auth.service;
 
 import com.example.outsourcingproject.domain.auth.entity.RefreshToken;
+import com.example.outsourcingproject.domain.auth.enums.AuthErrorMessage;
 import com.example.outsourcingproject.domain.auth.exception.InvalidCredentialsException;
 import com.example.outsourcingproject.domain.auth.repository.RefreshTokenRepository;
 import com.example.outsourcingproject.global.security.JwtProperties;
@@ -82,7 +83,7 @@ public class RefreshTokenServiceTest {
         // when and then
         assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(tokenValue))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("유효하지 않은 Refresh Token 입니다.");
+                .hasMessage(AuthErrorMessage.INVALID_REFRESH_TOKEN.getMessage());
     }
 
     @DisplayName("만료된 리프레시 토큰 검증 실패 테스트")
@@ -98,7 +99,7 @@ public class RefreshTokenServiceTest {
         // when and then
         assertThatThrownBy(() -> refreshTokenService.validateRefreshToken(tokenValue))
                 .isInstanceOf(InvalidCredentialsException.class)
-                .hasMessage("만료된 Refresh Token 입니다.");
+                .hasMessage(AuthErrorMessage.EXPIRED_REFRESH_TOKEN.getMessage());
     }
 
     @DisplayName("사용자별 리프레시 토큰 삭제 테스트")
