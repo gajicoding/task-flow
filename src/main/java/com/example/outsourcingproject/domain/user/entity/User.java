@@ -1,6 +1,6 @@
 package com.example.outsourcingproject.domain.user.entity;
 
-import com.example.outsourcingproject.global.entity.BaseEntity;
+import com.example.outsourcingproject.global.entity.SystemManagedEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseEntity {
+public class User extends SystemManagedEntity {
 
     @Id
     private Long id; // Auth와 동일한 PK

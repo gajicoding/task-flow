@@ -1,6 +1,7 @@
 package com.example.outsourcingproject.domain.auth.service;
 
 import com.example.outsourcingproject.domain.auth.entity.RefreshToken;
+import com.example.outsourcingproject.domain.auth.enums.AuthErrorMessage;
 import com.example.outsourcingproject.domain.auth.repository.RefreshTokenRepository;
 import com.example.outsourcingproject.domain.auth.exception.InvalidCredentialsException;
 import com.example.outsourcingproject.global.security.JwtProperties;
@@ -38,10 +39,10 @@ public class RefreshTokenService {
     @Transactional(readOnly = true)
     public RefreshToken validateRefreshToken(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
-                .orElseThrow(() -> new InvalidCredentialsException("유효하지 않은 Refresh Token 입니다."));
+                .orElseThrow(() -> new InvalidCredentialsException(AuthErrorMessage.INVALID_REFRESH_TOKEN.getMessage()));
 
         if (refreshToken.isExpired()) {
-            throw new InvalidCredentialsException("만료된 Refresh Token 입니다.");
+            throw new InvalidCredentialsException(AuthErrorMessage.EXPIRED_REFRESH_TOKEN.getMessage());
         }
 
         return refreshToken;

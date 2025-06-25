@@ -7,7 +7,10 @@ import com.example.outsourcingproject.domain.auth.dto.request.WithdrawRequestDto
 import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto;
 import com.example.outsourcingproject.domain.auth.dto.response.SignupResponseDto;
 import com.example.outsourcingproject.domain.auth.service.AuthService;
+import com.example.outsourcingproject.global.aop.annotation.ActivityLog;
 import com.example.outsourcingproject.global.dto.ApiResponse;
+import com.example.outsourcingproject.global.enums.ActivityType;
+import com.example.outsourcingproject.global.enums.TargetType;
 import com.example.outsourcingproject.global.security.JwtAuthenticationProvider;
 import com.example.outsourcingproject.global.security.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,31 +29,27 @@ public class AuthController {
     private final AuthService authService;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
-    @PostMapping("/auth/signup")
+    @PostMapping("/auth/register")
     public ResponseEntity<ApiResponse<SignupResponseDto>> signup(@Valid @RequestBody SignupRequestDto signupRequest) {
         SignupResponseDto response = authService.signup(signupRequest);
         return ResponseEntity.ok(ApiResponse.success(response, "회원가입이 완료되었습니다."));
     }
 
-    @PostMapping("/auth/signin")
+    @ActivityLog(type = ActivityType.USER_LOGGED_IN, target = TargetType.USER)
+    @PostMapping("/auth/login")
     public ResponseEntity<ApiResponse<SigninResponseDto>> signin(@Valid @RequestBody SigninRequestDto signinRequest) {
         SigninResponseDto response = authService.signin(signinRequest);
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + response.getToken())
-                .header("X-Refresh-Token", response.getRefreshToken())
-                .body(ApiResponse.success("로그인이 완료되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(response, "로그인이 완료되었습니다."));
     }
 
     @PostMapping("/auth/refresh")
     public ResponseEntity<ApiResponse<SigninResponseDto>> refreshToken(@Valid @RequestBody RefreshTokenRequestDto refreshTokenRequest) {
         SigninResponseDto response = authService.refreshToken(refreshTokenRequest.getRefreshToken());
 
-        return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + response.getToken())
-                .header("X-Refresh-Token", response.getRefreshToken())
-                .body(ApiResponse.success("토큰이 갱신되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(response,"토큰이 갱신되었습니다."));
     }
 
+    @ActivityLog(type = ActivityType.USER_LOGGED_OUT, target = TargetType.USER)
     @PostMapping("/auth/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                                     HttpServletRequest request) {

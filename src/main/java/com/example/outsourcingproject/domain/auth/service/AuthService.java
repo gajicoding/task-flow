@@ -6,6 +6,7 @@ import com.example.outsourcingproject.domain.auth.dto.response.SigninResponseDto
 import com.example.outsourcingproject.domain.auth.dto.response.SignupResponseDto;
 import com.example.outsourcingproject.domain.auth.entity.Auth;
 import com.example.outsourcingproject.domain.auth.entity.RefreshToken;
+import com.example.outsourcingproject.domain.auth.enums.AuthErrorMessage;
 import com.example.outsourcingproject.domain.auth.event.UserRegisteredEvent;
 import com.example.outsourcingproject.domain.auth.event.UserWithdrawnEvent;
 import com.example.outsourcingproject.domain.auth.exception.DuplicateEmailException;
@@ -38,11 +39,11 @@ public class AuthService {
     public SignupResponseDto signup(SignupRequestDto signupRequest) {
 
         if (authRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new DuplicateEmailException("이미 존재하는 이메일입니다.");
+            throw new DuplicateEmailException(AuthErrorMessage.DUPLICATE_EMAIL.getMessage());
         }
 
         if (authRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new DuplicateEmailException("이미 존재하는 사용자명입니다.");
+            throw new DuplicateEmailException(AuthErrorMessage.DUPLICATE_USERNAME.getMessage());
         }
 
         UserRole userRole = UserRole.USER;
@@ -74,15 +75,15 @@ public class AuthService {
 
         if (loginAttemptService.isBlocked(username)) {
             long remainingMinutes = loginAttemptService.getRemainingBlockTimeMinutes(username);
-            throw new RateLimitException("로그인이 일시적으로 차단되었습니다.", remainingMinutes);
+            throw new RateLimitException(AuthErrorMessage.ACCOUNT_BLOCKED.format(remainingMinutes),remainingMinutes);
         }
 
         Auth auth = authRepository.findActiveByUsername(username)
-                .orElseThrow(() -> new InvalidCredentialsException("잘못된 사용자명 또는 비밀번호입니다"));
+                .orElseThrow(() -> new InvalidCredentialsException(AuthErrorMessage.INVALID_CREDENTIALS.getMessage()));
 
         if (!passwordEncoder.matches(signinRequest.getPassword(), auth.getPassword())) {
             loginAttemptService.recordFailedAttempt(username);
-            throw new InvalidCredentialsException("잘못된 사용자명 또는 비밀번호입니다");
+            throw new InvalidCredentialsException(AuthErrorMessage.INVALID_CREDENTIALS.getMessage());
         }
 
         loginAttemptService.recordSuccessfulLogin(username);
@@ -90,7 +91,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createToken(auth.getId(), auth.getEmail(), auth.getRole());
         String refreshToken = refreshTokenService.createRefreshToken(auth.getId());
 
-        return new SigninResponseDto(accessToken, refreshToken);
+        return new SigninResponseDto(auth.getId(), accessToken, refreshToken);
     }
 
     @Transactional
@@ -99,7 +100,7 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenService.validateRefreshToken(refreshTokenValue);
 
         Auth auth = authRepository.findByIdAndIsDeletedFalse(refreshToken.getUserId())
-                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UserNotFoundException(AuthErrorMessage.USER_NOT_FOUND.getMessage()));
 
         String newAccessToken = jwtTokenProvider.createToken(
                 auth.getId(),
@@ -109,7 +110,7 @@ public class AuthService {
 
         String newRefreshToken = refreshTokenService.createRefreshToken(auth.getId());
 
-        return new SigninResponseDto(newAccessToken, newRefreshToken);
+        return new SigninResponseDto(auth.getId(), newAccessToken, newRefreshToken);
     }
 
     @Transactional
@@ -124,10 +125,10 @@ public class AuthService {
     @Transactional
     public void withdraw(Long userId, String password) {
         Auth auth = authRepository.findByIdAndIsDeletedFalse(userId)
-                .orElseThrow(() -> new InvalidCredentialsException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new InvalidCredentialsException(AuthErrorMessage.WITHDRAW_USER_NOT_FOUND.getMessage()));
 
         if (!passwordEncoder.matches(password, auth.getPassword())) {
-            throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
+            throw new InvalidCredentialsException(AuthErrorMessage.PASSWORD_MISMATCH.getMessage());
         }
 
         auth.delete();

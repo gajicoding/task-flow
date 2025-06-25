@@ -20,7 +20,6 @@ public class UserEventListener {
     private final UserRepository userRepository;
 
     @EventListener
-    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void handleUserRegistered(UserRegisteredEvent event) {
 
