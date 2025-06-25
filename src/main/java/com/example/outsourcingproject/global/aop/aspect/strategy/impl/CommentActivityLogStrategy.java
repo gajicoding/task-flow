@@ -5,7 +5,6 @@ import com.example.outsourcingproject.global.aop.aspect.strategy.AbstractActivit
 import com.example.outsourcingproject.global.dto.ApiResponse;
 import com.example.outsourcingproject.global.enums.ActivityType;
 import com.example.outsourcingproject.global.enums.TargetType;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,13 +20,13 @@ public class CommentActivityLogStrategy extends AbstractActivityLogStrategy {
     @Override
     public Long getTargetId() {
         if(activityLog.type().equals(ActivityType.COMMENT_CREATED)) {
-            return getCommentFromResponseDto(response);
+            return getCommentFromResponseDto();
         } else {
-            return getCommentIdFromRequestParams(joinPoint);
+            return getCommentIdFromRequestParams();
         }
     }
 
-    private Long getCommentFromResponseDto(Object response) {
+    private Long getCommentFromResponseDto() {
         if (
                 response instanceof ResponseEntity<?> entity
                         && entity.getBody() instanceof ApiResponse<?> apiResponse
@@ -38,7 +37,7 @@ public class CommentActivityLogStrategy extends AbstractActivityLogStrategy {
         return null;
     }
 
-    private Long getCommentIdFromRequestParams(JoinPoint joinPoint) {
+    private Long getCommentIdFromRequestParams() {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String[] parameterNames = signature.getParameterNames();
         Object[] args = joinPoint.getArgs();

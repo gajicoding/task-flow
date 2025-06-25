@@ -23,7 +23,7 @@ public class UserActivityLogStrategy extends AbstractActivityLogStrategy {
     public Long getUserId() {
         if (activityLog.type().equals(ActivityType.USER_LOGGED_IN)) {
             // 로그인 시 응답 바디에서 id 값 가져오기
-            userId = getUserIdFromResponseDto(response);
+            userId = getUserIdFromResponseDto();
             return userId;
         } else {
             // UserPrincipal 에서 id 값 가져오기
@@ -38,7 +38,7 @@ public class UserActivityLogStrategy extends AbstractActivityLogStrategy {
     }
 
 
-    private Long getUserIdFromResponseDto(Object response) {
+    private Long getUserIdFromResponseDto() {
         if (
                 response instanceof ResponseEntity<?> entity
                         && entity.getBody() instanceof ApiResponse<?> apiResponse

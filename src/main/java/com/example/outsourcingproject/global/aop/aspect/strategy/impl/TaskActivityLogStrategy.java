@@ -7,7 +7,6 @@ import com.example.outsourcingproject.global.aop.aspect.strategy.AbstractActivit
 import com.example.outsourcingproject.global.dto.ApiResponse;
 import com.example.outsourcingproject.global.enums.ActivityType;
 import com.example.outsourcingproject.global.enums.TargetType;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,9 @@ public class TaskActivityLogStrategy extends AbstractActivityLogStrategy {
     @Override
     public Long getTargetId() {
         if(activityLog.type().equals(ActivityType.TASK_CREATED)) {
-            return getTaskIdFromResponseDto(response);
+            return getTaskIdFromResponseDto();
         } else {
-            return getTaskIdFromRequestParams(joinPoint);
+            return getTaskIdFromRequestParams();
         }
     }
 
@@ -36,12 +35,12 @@ public class TaskActivityLogStrategy extends AbstractActivityLogStrategy {
 
     private String extractTaskMessage() {
         if(activityLog.type().equals(ActivityType.TASK_STATUS_CHANGED)){
-            return generateTaskStatusChangeMessage(response);
+            return generateTaskStatusChangeMessage();
         }
         return activityLog.type().getMessage1();
     }
 
-    private String generateTaskStatusChangeMessage(Object response) {
+    private String generateTaskStatusChangeMessage() {
         if (
             response instanceof ResponseEntity<?> entity
                     && entity.getBody() instanceof ApiResponse<?> apiResponse
@@ -56,7 +55,7 @@ public class TaskActivityLogStrategy extends AbstractActivityLogStrategy {
         return null;
     }
 
-    private Long getTaskIdFromResponseDto(Object response) {
+    private Long getTaskIdFromResponseDto() {
         if (
                 response instanceof ResponseEntity<?> entity
                         && entity.getBody() instanceof ApiResponse<?> apiResponse
@@ -67,7 +66,7 @@ public class TaskActivityLogStrategy extends AbstractActivityLogStrategy {
         return null;
     }
 
-    private Long getTaskIdFromRequestParams(JoinPoint joinPoint) {
+    private Long getTaskIdFromRequestParams() {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String[] parameterNames = signature.getParameterNames();
         Object[] args = joinPoint.getArgs();
